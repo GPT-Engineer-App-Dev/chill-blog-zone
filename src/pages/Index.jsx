@@ -1,13 +1,28 @@
-import { Box, Container, Flex, Heading, Text, VStack, HStack, Link, useColorMode, IconButton } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text, VStack, HStack, Link, useColorMode, IconButton, Input, Textarea, Button, FormControl, FormLabel } from "@chakra-ui/react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useState } from "react";
 
 const Index = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [posts] = useState([
+  const [posts, setPosts] = useState([
     { title: "First Blog Post", excerpt: "This is the summary of the first blog post." },
     { title: "Second Blog Post", excerpt: "This is the summary of the second blog post." },
   ]);
+  const [newPost, setNewPost] = useState({ title: "", content: "", tags: "" });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPost({ ...newPost, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { title, content, tags } = newPost;
+    if (title && content) {
+      setPosts([...posts, { title, excerpt: content, tags }]);
+      setNewPost({ title: "", content: "", tags: "" });
+    }
+  };
 
   return (
     <Container maxW="container.xl" p={4}>
@@ -26,9 +41,44 @@ const Index = () => {
               <Box key={index} p={5} shadow="md" borderWidth="1px">
                 <Heading fontSize="xl">{post.title}</Heading>
                 <Text mt={4}>{post.excerpt}</Text>
+                {post.tags && <Text mt={2} color="gray.500">Tags: {post.tags}</Text>}
               </Box>
             ))}
           </VStack>
+          <Box mt={8}>
+            <Heading as="h2" size="md" mb={4}>Add New Post</Heading>
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4} align="stretch">
+                <FormControl id="title" isRequired>
+                  <FormLabel>Title</FormLabel>
+                  <Input
+                    type="text"
+                    name="title"
+                    value={newPost.title}
+                    onChange={handleInputChange}
+                  />
+                </FormControl>
+                <FormControl id="content" isRequired>
+                  <FormLabel>Content</FormLabel>
+                  <Textarea
+                    name="content"
+                    value={newPost.content}
+                    onChange={handleInputChange}
+                  />
+                </FormControl>
+                <FormControl id="tags">
+                  <FormLabel>Tags</FormLabel>
+                  <Input
+                    type="text"
+                    name="tags"
+                    value={newPost.tags}
+                    onChange={handleInputChange}
+                  />
+                </FormControl>
+                <Button type="submit" colorScheme="blue">Add Post</Button>
+              </VStack>
+            </form>
+          </Box>
         </Box>
         <Box flex="1" p={4} borderLeft="1px solid" borderColor="gray.200">
           <Heading as="h2" size="md" mb={4}>About Me</Heading>
