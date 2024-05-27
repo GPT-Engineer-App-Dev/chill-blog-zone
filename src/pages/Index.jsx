@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Text, VStack, HStack, Link, useColorMode, IconButton, Input, Textarea, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text, VStack, Link, useColorMode, IconButton, Input, Textarea, Button, FormControl, FormLabel } from "@chakra-ui/react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useState } from "react";
 
@@ -25,7 +25,7 @@ const Index = () => {
   };
 
   return (
-    <Container maxW="container.xl" p={4}>
+    <Container maxW="container.xl" p={4} bg={colorMode === "light" ? "white" : "gray.800"} color={colorMode === "light" ? "black" : "white"}>
       <Flex justifyContent="space-between" alignItems="center" mb={4}>
         <Heading as="h1" size="lg">My Blog</Heading>
         <IconButton
@@ -38,7 +38,7 @@ const Index = () => {
         <Box flex="3" p={4}>
           <VStack spacing={8} align="stretch">
             {posts.map((post, index) => (
-              <Box key={index} p={5} shadow="md" borderWidth="1px">
+              <Box key={index} p={5} shadow="md" borderWidth="1px" bg={colorMode === "light" ? "gray.100" : "gray.700"}>
                 <Heading fontSize="xl">{post.title}</Heading>
                 <Text mt={4}>{post.excerpt}</Text>
                 {post.tags && <Text mt={2} color="gray.500">Tags: {post.tags}</Text>}
@@ -80,7 +80,7 @@ const Index = () => {
             </form>
           </Box>
         </Box>
-        <Box flex="1" p={4} borderLeft="1px solid" borderColor="gray.200">
+        <Box flex="1" p={4} borderLeft="1px solid" borderColor={colorMode === "light" ? "gray.200" : "gray.600"} bg={colorMode === "light" ? "white" : "gray.800"}>
           <Heading as="h2" size="md" mb={4}>About Me</Heading>
           <Text mb={4}>This is a brief description about me.</Text>
           <Heading as="h2" size="md" mb={4}>Links</Heading>
