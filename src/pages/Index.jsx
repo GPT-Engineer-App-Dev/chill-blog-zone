@@ -1,6 +1,6 @@
-import { Box, Container, Flex, Heading, Text, VStack, Link, useColorMode, IconButton, Input, Textarea, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text, VStack, Link, useColorMode, IconButton, Input, Textarea, Button, FormControl, FormLabel, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay } from "@chakra-ui/react";
 import { FaMoon, FaSun } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const Index = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -9,6 +9,12 @@ const Index = () => {
     { title: "Second Blog Post", excerpt: "This is the summary of the second blog post." },
   ]);
   const [newPost, setNewPost] = useState({ title: "", content: "", tags: "" });
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const onCloseDeleteDialog = () => setIsDeleteDialogOpen(false);
+  const cancelRef = useRef();
+  const toast = useToast();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +28,24 @@ const Index = () => {
       setPosts([...posts, { title, excerpt: content, tags }]);
       setNewPost({ title: "", content: "", tags: "" });
     }
+  };
+
+  const handleDeleteClick = (index) => {
+    setPostToDelete(index);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeletePost = () => {
+    const updatedPosts = posts.filter((_, index) => index !== postToDelete);
+    setPosts(updatedPosts);
+    setIsDeleteDialogOpen(false);
+    toast({
+      title: "Post deleted.",
+      description: "The blog post has been deleted successfully.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -39,7 +63,10 @@ const Index = () => {
           <VStack spacing={8} align="stretch">
             {posts.map((post, index) => (
               <Box key={index} p={5} shadow="md" borderWidth="1px" bg={colorMode === "light" ? "gray.100" : "gray.700"}>
-                <Heading fontSize="xl">{post.title}</Heading>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Heading fontSize="xl">{post.title}</Heading>
+                  <Button colorScheme="red" size="sm" onClick={() => handleDeleteClick(index)}>Delete</Button>
+                </Flex>
                 <Text mt={4}>{post.excerpt}</Text>
                 {post.tags && <Text mt={2} color="gray.500">Tags: {post.tags}</Text>}
               </Box>
@@ -91,6 +118,30 @@ const Index = () => {
           </VStack>
         </Box>
       </Flex>
+      <AlertDialog
+        isOpen={isDeleteDialogOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseDeleteDialog}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Post
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCloseDeleteDialog}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={handleDeletePost} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Container>
   );
 };
